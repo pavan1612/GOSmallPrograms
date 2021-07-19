@@ -32,7 +32,7 @@ func main() {
 	start = time.Now()
 	isPrimeGo(num, routines)
 	spentConc := time.Since(start)
-	// And Go kills is with sequential execution
+	// And Go kills is with concurrent execution
 	fmt.Printf("For Concurrent Execution time taken is %v and result is %v\n", spentConc, !flag)
 }
 func isPrimeGo(n uint64, rt int) {
