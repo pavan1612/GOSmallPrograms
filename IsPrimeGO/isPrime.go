@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"math"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -17,23 +19,46 @@ var (
 // Provide args from 3 to 5 to check performance increase
 
 func main() {
-	var num uint64 = 9999999992999999999
+	// var numLarge uint64 = 9999999992999999999
+	var maxNum int = 100000 // Max count : 1000000
+	primes := getAllPrime(maxNum)
 	args := os.Args
 	routines, _ := strconv.Atoi(args[1])
 
 	// Sequential Execution
 	start := time.Now()
-	result := isPrime(num)
+	var result bool
+	for _, num := range primes {
+		n, _ := strconv.Atoi(num)
+		result = isPrime(uint64(n))
+	}
+	// result = isPrime(numLarge)
 	spentSeq := time.Since(start)
 	// This is the most optimised algorithm for checking prime sequentially
 	fmt.Printf("For Sequential Execution time taken is %v and result is %v\n", spentSeq, result)
 
 	// Concurrent Execution
 	start = time.Now()
-	isPrimeGo(num, routines)
+	for _, num := range primes {
+		n, _ := strconv.Atoi(num)
+		isPrimeGo(uint64(n), routines)
+		flag = false
+	}
+	// isPrimeGo(numLarge, routines)
 	spentConc := time.Since(start)
 	// And Go kills is with concurrent execution
 	fmt.Printf("For Concurrent Execution time taken is %v and result is %v\n", spentConc, !flag)
+}
+func getAllPrime(maxNum int) []string {
+
+	dat, err := ioutil.ReadFile("primes50.txt")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var primes []string = strings.Fields(string(dat))
+	return primes[:maxNum]
+
 }
 func isPrimeGo(n uint64, rt int) {
 	if n < 2 {
