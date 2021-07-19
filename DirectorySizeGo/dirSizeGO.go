@@ -9,10 +9,10 @@ import (
 
 var (
 	sizeDir       int64
+	fileNum       int
+	wg            = sync.WaitGroup{}
 	chSize        = make(chan int64)
 	chFileNum     = make(chan int)
-	wg            = sync.WaitGroup{}
-	fileNum       int
 	donechSize    = make(chan struct{})
 	donechFileNum = make(chan struct{})
 )
@@ -20,7 +20,7 @@ var (
 func main() {
 	start := time.Now()
 	wg.Add(1)
-	go FileSize("C:/Users/pavan")
+	go FileSize("C:/Users")
 	go func() {
 		for {
 			select {
@@ -61,8 +61,9 @@ func FileSize(root string) {
 		if f.IsDir() {
 			wg.Add(1)
 			go FileSize(root + "/" + f.Name())
+		} else {
+			chFileNum <- 1
 		}
-		chFileNum <- 1
 		size += f.Size()
 	}
 	chSize <- size

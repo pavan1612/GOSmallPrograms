@@ -12,9 +12,9 @@ var fileNum int
 
 func main() {
 	var err error
-	var root string = "C:/Users/pavan"
+	var root1 string = "C:/Users"
 	start := time.Now()
-	err = FilePathWalkDir(root)
+	err = FilePathWalkDir(root1)
 	spent := time.Since(start)
 	if err != nil {
 		panic(err)
