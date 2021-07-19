@@ -20,7 +20,7 @@ var (
 
 func main() {
 	// var numLarge uint64 = 9999999992999999999
-	var maxNum int = 100000 // Max count : 1000000
+	var maxNum int = 79 // Max count : 79
 	primes := getAllPrime(maxNum)
 	args := os.Args
 	routines, _ := strconv.Atoi(args[1])
@@ -51,7 +51,7 @@ func main() {
 }
 func getAllPrime(maxNum int) []string {
 
-	dat, err := ioutil.ReadFile("primes50.txt")
+	dat, err := ioutil.ReadFile("primes.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
