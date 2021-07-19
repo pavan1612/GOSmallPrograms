@@ -7,23 +7,46 @@ import (
 	"time"
 )
 
-var sizeDir int64
-var chSize = make(chan int64, 100)
-var fileNum int
-
-var wg = sync.WaitGroup{}
+var (
+	sizeDir       int64
+	chSize        = make(chan int64)
+	chFileNum     = make(chan int)
+	wg            = sync.WaitGroup{}
+	fileNum       int
+	donechSize    = make(chan struct{})
+	donechFileNum = make(chan struct{})
+)
 
 func main() {
 	start := time.Now()
 	wg.Add(1)
 	go FileSize("C:/Users/pavan")
 	go func() {
-		for i := range chSize {
-			sizeDir += i
+		for {
+			select {
+			case i := <-chSize:
+				sizeDir += i
+			case <-donechSize:
+				close(chSize)
+				return
+			}
+		}
+	}()
+	go func() {
+		for {
+			select {
+			case i := <-chFileNum:
+				fileNum += i
+			case <-donechFileNum:
+				close(chFileNum)
+				return
+			}
 		}
 	}()
 
 	wg.Wait()
+	donechFileNum <- struct{}{}
+	donechSize <- struct{}{}
 	spent := time.Since(start)
 	fmt.Printf("The size of the directory is %v MB\nAnd Time spent is %v ms\nNumber of Files :%v", ((sizeDir / 1024) / 1024), spent.Milliseconds(), fileNum)
 }
@@ -39,7 +62,7 @@ func FileSize(root string) {
 			wg.Add(1)
 			go FileSize(root + "/" + f.Name())
 		}
-		fileNum++
+		chFileNum <- 1
 		size += f.Size()
 	}
 	chSize <- size
