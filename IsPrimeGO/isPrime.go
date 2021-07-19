@@ -23,7 +23,7 @@ func main() {
 
 	// Sequential Execution
 	start := time.Now()
-	result := isPrime(num, routines)
+	result := isPrime(num)
 	spentSeq := time.Since(start)
 	// This is the most optimised algorithm for checking prime sequentially
 	fmt.Printf("For Sequential Execution time taken is %v and result is %v\n", spentSeq, result)
@@ -74,7 +74,7 @@ func checkPartModulusGo(n, start, end uint64) {
 	wg.Done()
 }
 
-func isPrime(n uint64, rt int) bool {
+func isPrime(n uint64) bool {
 	if n < 2 {
 		return false
 	}
@@ -85,24 +85,12 @@ func isPrime(n uint64, rt int) bool {
 		return false
 	}
 	var sqrtn uint64 = uint64(math.Sqrt(float64(n))) + 1
-	var sqrtnPart uint64 = sqrtn / uint64(rt)
-	var start uint64 = 0
-	for i := 0; i < rt; i++ {
-		end := start + sqrtnPart
-		if !checkPartModulus(n, start, end) {
-			return false
-		}
-		start = end
-	}
-	return true
-
-}
-
-func checkPartModulus(n, start, end uint64) bool {
-	for i := start + 6; i <= end; i = i + 6 {
+	var i uint64
+	for i = 6; i <= sqrtn; i = i + 6 {
 		if n%(i-1) == 0 || n%(i+1) == 0 {
 			return false
 		}
 	}
 	return true
+
 }
